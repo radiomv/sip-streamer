@@ -8,4 +8,4 @@ baresip -d -f / \
     -e u \
     -e "d sip:$SIP_ADDR"
 
-ffmpeg -y -re -i "$STREAM_URL" -ac 1 -af "acompressor" stream.wav -hide_banner -nostats
+ffmpeg -y -re -i "$STREAM_URL" -ac 1 -ar 48000 -af "acompressor" stream.wav -hide_banner -nostats
