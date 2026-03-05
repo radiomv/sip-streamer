@@ -53,7 +53,7 @@ class Streamer(BareSIP):
             [
                 "ffmpeg", "-y", "-re",
                 "-i", STREAM_URL,
-                "-ac", "1", "-ar", "48000",
+                "-ac", "1", #"-ar", "48000",
                 "-af", (
                     "highpass=f=250,"
                     "lowpass=f=3500,"
@@ -113,6 +113,7 @@ def main():
         streamer._stop_ffmpeg()
         sys.exit(1)
 
+    time.sleep(5)
     LOG.info("Dialing %s", SIP_ADDR)
     streamer.call(SIP_ADDR)
 
