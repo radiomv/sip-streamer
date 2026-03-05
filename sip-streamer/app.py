@@ -53,7 +53,7 @@ class Streamer(BareSIP):
             [
                 "ffmpeg", "-y", "-re",
                 "-i", STREAM_URL,
-                "-ac", "1", #"-ar", "48000",
+                "-ac", "1", "-ar", "48000",
                 "-af", (
                     "highpass=f=250,"
                     "lowpass=f=3500,"
