@@ -20,6 +20,7 @@ services:
 
   sip-streamer:
     build: ../sip-streamer
+    restart: always
     environment:
       SIP_ID: "streamer@pbx"
       SIP_ADDR: "1#100*1234@pbx"

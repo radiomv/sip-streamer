@@ -1,24 +1,24 @@
 FROM debian:bookworm-slim
 
-LABEL maintainer="Ilya Spivakov <ilya@spivakov.me>"
+RUN apt-get update && apt-get -yqq install \
+    ca-certificates \
+    gstreamer1.0-plugins-* \
+    baresip \
+    ffmpeg \
+    python3 \
+    python3-pip \
+    python3-pexpect \
+    && rm -rf /var/lib/apt/lists/*
 
-ENV BUILD_PACKAGES="ca-certificates\
-                    gstreamer1.0-plugins-* \
-                    baresip \
-                    ffmpeg"
+RUN pip3 install --break-system-packages baresipy
 
-RUN apt-get update \
-    && apt-get \
-        -yqq \
-        install ${BUILD_PACKAGES} 
+COPY config /root/.baresip/config
 
+# baresip 1.0.0 on bookworm can't auto-detect ~/.baresip; wrap it with -f
+RUN mv /usr/bin/baresip /usr/bin/baresip.real \
+    && printf '#!/bin/sh\nexec /usr/bin/baresip.real -f /root/.baresip "$@"\n' > /usr/bin/baresip \
+    && chmod +x /usr/bin/baresip
 
-COPY config /config
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+COPY app.py /app.py
 
-# ENV SIP_ID="user@example.com"
-# ENV SIP_ADDR="destination@example.com"
-# ENV STREAM_URL="https://example.com/stream.mp3"
-
-ENTRYPOINT /docker-entrypoint.sh
+ENTRYPOINT ["python3", "-u", "/app.py"]
