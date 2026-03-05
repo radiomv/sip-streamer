@@ -80,6 +80,29 @@ sequenceDiagram
     end
 ```
 
+## Testing
+
+Start the test environment (Asterisk PBX + sip-streamer):
+
+```sh
+cd tests
+docker compose up --build -d
+```
+
+Listen to the conference audio from your Mac:
+
+```sh
+brew install baresip
+baresip -e '/uanew <sip:listener@localhost>;regint=0' -e 'u' -e 'd sip:1#100*1234@localhost'
+```
+
+Run the automated restart tests:
+
+```sh
+cd tests
+./test-restart.sh
+```
+
 ## Building
 
 ```sh
