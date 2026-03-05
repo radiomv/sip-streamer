@@ -1,0 +1,50 @@
+services:
+  test-server:
+    build: test-server
+    volumes:
+      - ./output:/recordings
+    ports:
+      - "5060:5060/udp"
+      - "5060:5060/tcp"
+      - "10000-10100:10000-10100/udp"
+    healthcheck:
+      test: ["CMD", "nc", "-zu", "localhost", "5060"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+      start_period: 5s
+    networks:
+      sip-net:
+        aliases:
+          - pbx
+
+  sip-streamer:
+    build: ../sip-streamer
+    environment:
+      SIP_ID: "streamer@pbx"
+      SIP_ADDR: "1#100*1234@pbx"
+      STREAM_URL: "https://stream.radiomv.com/slavic/stream.mp3"
+    depends_on:
+      test-server:
+        condition: service_healthy
+    networks:
+      - sip-net
+
+  listener:
+    build: listener
+    stdin_open: true
+    tty: true
+    environment:
+      SIP_SERVER: "pbx"
+      SIP_ADDR: "1#100*1234@pbx"
+      RECORD_SECONDS: "30"
+    volumes:
+      - ./output:/output
+    depends_on:
+      test-server:
+        condition: service_healthy
+    networks:
+      - sip-net
+
+networks:
+  sip-net:
