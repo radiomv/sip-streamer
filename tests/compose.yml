@@ -1,8 +1,6 @@
 services:
   test-server:
     build: test-server
-    volumes:
-      - ./output:/recordings
     ports:
       - "5060:5060/udp"
       - "5060:5060/tcp"
@@ -25,22 +23,6 @@ services:
       SIP_ID: "streamer@pbx"
       SIP_ADDR: "1#100*1234@pbx"
       STREAM_URL: "https://stream.radiomv.com/slavic/stream.mp3"
-    depends_on:
-      test-server:
-        condition: service_healthy
-    networks:
-      - sip-net
-
-  listener:
-    build: listener
-    stdin_open: true
-    tty: true
-    environment:
-      SIP_SERVER: "pbx"
-      SIP_ADDR: "1#100*1234@pbx"
-      RECORD_SECONDS: "30"
-    volumes:
-      - ./output:/output
     depends_on:
       test-server:
         condition: service_healthy
